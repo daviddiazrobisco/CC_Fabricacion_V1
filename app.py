@@ -56,7 +56,7 @@ def read_excel_any(file_like) -> pd.DataFrame:
     """Lee la primera hoja no vacía y normaliza cabeceras."""
     xl = pd.ExcelFile(file_like, engine="openpyxl")
     for sheet in xl.sheet_names:
-        df = pd.read_excel(file_like, sheet_name=sheet, engine="openpyxl")
+        df = xl.parse(sheet_name=sheet)
         df = df.dropna(how="all", axis=0).dropna(how="all", axis=1)
         if df.shape[0] and df.shape[1]:
             return normalize_columns(df)
@@ -273,7 +273,7 @@ if go:
             try:
                 xl_prev = pd.ExcelFile(up_resumen_prev, engine="openpyxl")
                 if "Resumen" in xl_prev.sheet_names:
-                    tmp = pd.read_excel(up_resumen_prev, sheet_name="Resumen", engine="openpyxl")
+                    tmp = xl_prev.parse(sheet_name="Resumen")
                     if "Referencia" in tmp.columns and "Comentarios" in tmp.columns:
                         comentarios_prev = tmp[["Referencia","Comentarios"]].dropna()
             except:
@@ -285,7 +285,7 @@ if go:
             try:
                 xl_map = pd.ExcelFile(up_mapeos, engine="openpyxl")
                 if "Mapeos_usuario" in xl_map.sheet_names:
-                    mp = pd.read_excel(up_mapeos, sheet_name="Mapeos_usuario", engine="openpyxl").dropna(how="all")
+                    mp = xl_map.parse(sheet_name="Mapeos_usuario").dropna(how="all")
                     mp = mp.rename(columns={c:c.lower() for c in mp.columns})
                     if "origen" in mp.columns and "destino" in mp.columns:
                         mapeos_usuario = mp[["origen","destino"]]
